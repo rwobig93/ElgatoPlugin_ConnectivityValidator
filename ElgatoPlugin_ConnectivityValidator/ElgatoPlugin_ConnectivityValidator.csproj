@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AssemblyName>Elgato_ConnectivityValidator</AssemblyName>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <OutputPath>$(APPDATA)\Elgato\StreamDeck\Plugins\com.rwobig93.connectivityvalidator.sdPlugin\</OutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <None Update="manifest.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="SharpDeck" Version="6.0.1" />
+    </ItemGroup>
+
+    <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+      <Exec Command="taskkill -f -t -im StreamDeck.exe -fi &quot;status eq running&quot;" />
+    </Target>
+
+</Project>
