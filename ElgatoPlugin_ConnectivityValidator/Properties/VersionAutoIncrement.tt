@@ -1,0 +1,17 @@
+﻿﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+
+using System.Reflection;
+
+[assembly: AssemblyVersion("<#= this.DateYear #>.<#= this.DateMonth #>.<#= this.DateDay #>.<#= this.MinutesSinceMidnight  #>")]
+[assembly: AssemblyCompany("Wobigtech")]
+[assembly: AssemblyProduct("com.rwobig93.connectivity.validator")]
+
+<#+
+
+ int DateYear = (int)DateTime.Now.ToLocalTime().Date.Year;
+ int DateMonth = (int)DateTime.Now.ToLocalTime().Date.Month;
+ int DateDay = (int)DateTime.Now.ToLocalTime().Date.Day;
+ int MinutesSinceMidnight = (int)DateTime.UtcNow.TimeOfDay.TotalMinutes;
+
+#>

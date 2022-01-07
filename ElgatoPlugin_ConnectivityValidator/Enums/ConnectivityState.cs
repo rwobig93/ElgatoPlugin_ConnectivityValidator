@@ -1,4 +1,4 @@
-﻿namespace ElgatoPlugin_ConnectivityValidator.Supports;
+﻿namespace ElgatoPlugin_ConnectivityValidator.Enums;
 
 public enum ConnectivityState
 {

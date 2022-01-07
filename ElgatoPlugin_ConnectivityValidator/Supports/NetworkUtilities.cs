@@ -1,12 +1,13 @@
 ﻿using System.Net;
 using System.Net.NetworkInformation;
 using ElgatoPlugin_ConnectivityValidator.Actions;
+using ElgatoPlugin_ConnectivityValidator.Enums;
 
 namespace ElgatoPlugin_ConnectivityValidator.Supports;
 
-public static class NetworkUtilities
+internal static class NetworkUtilities
 {
-    public static async Task<ConnectivityState> GetCurrentConnectivityState(ConnectivitySettings settings)
+    internal static async Task<ConnectivityState> GetCurrentConnectivityState(ConnectivitySettings settings)
     {
         var webClient = new HttpClient();
         

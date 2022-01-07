@@ -7,51 +7,77 @@
         <Nullable>enable</Nullable>
         <AssemblyName>com.rwobig93.connectivity.validator</AssemblyName>
         <Company>Wobigtech</Company>
-        <Product>Elgato ConnectivityValidator</Product>
+        <Product>com.rwobig93.connectivity.validator</Product>
         <ApplicationIcon>WT_Icon_New.ico</ApplicationIcon>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <OutputPath>$(APPDATA)\Elgato\StreamDeck\Plugins\com.rwobig93.connectivityvalidator.sdPlugin\</OutputPath>
-      <Optimize>true</Optimize>
+        <OutputPath>$(APPDATA)\Elgato\StreamDeck\Plugins\com.rwobig93.connectivityvalidator.sdPlugin\</OutputPath>
+        <Optimize>true</Optimize>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-      <OutputPath>C:\Users\Rick\AppData\Roaming\Elgato\StreamDeck\Plugins\com.rwobig93.connectivityvalidator.sdPlugin\</OutputPath>
+        <OutputPath>C:\Users\Rick\AppData\Roaming\Elgato\StreamDeck\Plugins\com.rwobig93.connectivityvalidator.sdPlugin\</OutputPath>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="SharpDeck" Version="6.0.1" />
+        <PackageReference Include="Serilog.Sinks.File" Version="5.0.0"/>
+        <PackageReference Include="SharpDeck" Version="6.0.1"/>
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="manifest.json" />
-      <Content Include="manifest.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-      <None Update="Images\wt_icon_action.png">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Images\wt_icon_action@2x.png">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Images\wt_icon_category.png">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Images\wt_icon_category@2x.png">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Images\wt_icon_key.png">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+        <None Remove="manifest.json"/>
+        <Content Include="manifest.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <None Update="Images\wt_icon_action.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Images\wt_icon_action@2x.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Images\wt_icon_category.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Images\wt_icon_category@2x.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Images\wt_icon_key.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Properties\VersionAutoIncrement.tt">
+            <Generator>TextTemplatingFileGenerator</Generator>
+            <LastGenOutput>VersionAutoIncrement.cs</LastGenOutput>
+        </None>
     </ItemGroup>
 
+    <ItemGroup>
+        <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="Properties\VersionAutoIncrement.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>VersionAutoIncrement.tt</DependentUpon>
+        </Compile>
+    </ItemGroup>
+
+    <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v16.0\TextTemplating\Microsoft.TextTemplating.targets"/>
+
+    <PropertyGroup>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <TransformOnBuild>true</TransformOnBuild>
+        <OverwriteReadOnlyOutputFiles>true</OverwriteReadOnlyOutputFiles>
+        <TransformOutOfDateOnly>false</TransformOutOfDateOnly>
+    </PropertyGroup>
+
     <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-      <Exec Command="taskkill -f -t -im StreamDeck.exe -fi &quot;status eq running&quot;" />
+        <Exec Command="taskkill -f -t -im StreamDeck.exe -fi &quot;status eq running&quot;"/>
     </Target>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-      <Exec Command="start &quot;C:\Program Files\Elgato\StreamDeck\StreamDeck.exe&quot;" />
+        <Exec Command="start &quot;C:\Program Files\Elgato\StreamDeck\StreamDeck.exe&quot;"/>
     </Target>
 
 </Project>

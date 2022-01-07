@@ -1,6 +1,8 @@
 ﻿using System.Buffers.Text;
 using System.ComponentModel;
+using ElgatoPlugin_ConnectivityValidator.Enums;
 using ElgatoPlugin_ConnectivityValidator.Supports;
+using Serilog;
 
 namespace ElgatoPlugin_ConnectivityValidator.Actions;
 
@@ -11,29 +13,34 @@ public class ConnectivityValidateAction : StreamDeckAction<ConnectivitySettings>
     {
         var stopThread = false;
         var worker = new BackgroundWorker();
+        Log.Debug("Attempting to start core worker thread");
         worker.DoWork += async (e, a) =>
         {
+            Log.Debug("Successfully started core worker thread");
             while (!stopThread)
             {
                 try
                 {
+                    Log.Verbose("Running core connectivity validation loop");
                     var settings = args.Payload.GetSettings<ConnectivitySettings>();
                     await UpdateConnectivityState(settings);
                     await Task.Delay(2000);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex);
+                    Log.Fatal(ex, "Failure occured during core connectivity loop: {ErrorMessage}", ex.Message);
                     stopThread = true;
                 }
             }
         };
+        
         await Task.CompletedTask;
         worker.RunWorkerAsync();
     }
 
     protected override async Task OnKeyDown(ActionEventArgs<KeyPayload> args)
     {
+        Log.Debug("Elgato Stream Deck key was pressed, attempting action");
         var settings = args.Payload.GetSettings<ConnectivitySettings>();
         await SetImageAsync(EncodedImages.ImageChecking);
         await UpdateConnectivityState(settings);
