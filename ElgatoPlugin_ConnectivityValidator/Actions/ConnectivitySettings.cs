@@ -1,11 +1,12 @@
 ﻿using ElgatoPlugin_ConnectivityValidator.Enums;
+using ElgatoPlugin_ConnectivityValidator.Supports;
+
 // ReSharper disable ClassNeverInstantiated.Global
 
 namespace ElgatoPlugin_ConnectivityValidator.Actions;
 
 public class ConnectivitySettings
 {
-    public string[] Layer4ValidationUrls { get; set; } = new[] {"https://google.com","https://microsoft.com"};
-    public string[] Layer3ValidationAddresses { get; set; } = new[] {"8.8.8.8", "8.8.4.4"};
-    public bool StopThread { get; set; } = false;
+    public string[] Layer4ValidationUrls { get; set; } = ApplicationDefaults.Layer4ValidationUrls;
+    public string[] Layer3ValidationAddresses { get; set; } = ApplicationDefaults.Layer3ValidationAddresses;
 }

@@ -21,49 +21,61 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Serilog.Sinks.File" Version="5.0.0"/>
-        <PackageReference Include="SharpDeck" Version="6.0.1"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
+        <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+        <PackageReference Include="SharpDeck" Version="6.0.1" />
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="manifest.json"/>
+        <None Remove="manifest.json" />
         <Content Include="manifest.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
-        <None Update="Images\wt_icon_action.png">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="Images\wt_icon_action@2x.png">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="Images\wt_icon_category.png">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="Images\wt_icon_category@2x.png">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="Images\wt_icon_key.png">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
         <None Update="Properties\VersionAutoIncrement.tt">
             <Generator>TextTemplatingFileGenerator</Generator>
             <LastGenOutput>VersionAutoIncrement.cs</LastGenOutput>
         </None>
+        <None Remove="appsettings.json" />
+        <Content Include="appsettings.json">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <None Remove="Images\wt_icon_action.png" />
+        <Content Include="Images\wt_icon_action.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <None Remove="Images\wt_icon_action@2x.png" />
+        <Content Include="Images\wt_icon_action@2x.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <None Remove="Images\wt_icon_category.png" />
+        <Content Include="Images\wt_icon_category.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <None Remove="Images\wt_icon_category@2x.png" />
+        <Content Include="Images\wt_icon_category@2x.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <None Remove="Images\wt_icon_key.png" />
+        <Content Include="Images\wt_icon_key.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <None Remove="Images\wt_icon_key@2x.png" />
+        <Content Include="Images\wt_icon_key@2x.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
-        <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}"/>
+        <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Update="Properties\VersionAutoIncrement.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>VersionAutoIncrement.tt</DependentUpon>
-        </Compile>
+      <Compile Update="Properties\VersionAutoIncrement.cs">
+        <AutoGen>True</AutoGen>
+        <DesignTime>True</DesignTime>
+        <DependentUpon>VersionAutoIncrement.tt</DependentUpon>
+      </Compile>
     </ItemGroup>
-
-    <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v16.0\TextTemplating\Microsoft.TextTemplating.targets"/>
 
     <PropertyGroup>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -73,11 +85,7 @@
     </PropertyGroup>
 
     <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-        <Exec Command="taskkill -f -t -im StreamDeck.exe -fi &quot;status eq running&quot;"/>
-    </Target>
-
-    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-        <Exec Command="start &quot;C:\Program Files\Elgato\StreamDeck\StreamDeck.exe&quot;"/>
+        <Exec Command="taskkill -f -t -im StreamDeck.exe -fi &quot;status eq running&quot;" />
     </Target>
 
 </Project>

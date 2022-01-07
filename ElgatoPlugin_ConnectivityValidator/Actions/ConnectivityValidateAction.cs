@@ -11,9 +11,14 @@ public class ConnectivityValidateAction : StreamDeckAction<ConnectivitySettings>
 {
     protected override async Task OnWillAppear(ActionEventArgs<AppearancePayload> args)
     {
+        Log.Information("[{ApplicationName}] => Version {Version} | Application Started!", ApplicationManagement.GetRunningApplicationName(), ApplicationManagement.GetRunningApplicationVersion());
+        
         var stopThread = false;
+        var settings = args.Payload.GetSettings<ConnectivitySettings>();
+        await LocalConfiguration.UpdateRunningSettingsFromLocalSettings(settings);
         var worker = new BackgroundWorker();
         Log.Debug("Attempting to start core worker thread");
+        
         worker.DoWork += async (e, a) =>
         {
             Log.Debug("Successfully started core worker thread");
@@ -22,13 +27,13 @@ public class ConnectivityValidateAction : StreamDeckAction<ConnectivitySettings>
                 try
                 {
                     Log.Verbose("Running core connectivity validation loop");
-                    var settings = args.Payload.GetSettings<ConnectivitySettings>();
+                    settings = args.Payload.GetSettings<ConnectivitySettings>();
                     await UpdateConnectivityState(settings);
                     await Task.Delay(2000);
                 }
                 catch (Exception ex)
                 {
-                    Log.Fatal(ex, "Failure occured during core connectivity loop: {ErrorMessage}", ex.Message);
+                    Log.Fatal(ex, "Failure occurred during core connectivity loop: {ErrorMessage}", ex.Message);
                     stopThread = true;
                 }
             }
@@ -43,6 +48,7 @@ public class ConnectivityValidateAction : StreamDeckAction<ConnectivitySettings>
         Log.Debug("Elgato Stream Deck key was pressed, attempting action");
         var settings = args.Payload.GetSettings<ConnectivitySettings>();
         await SetImageAsync(EncodedImages.ImageChecking);
+        await LocalConfiguration.UpdateRunningSettingsFromLocalSettings(settings);
         await UpdateConnectivityState(settings);
     }
 
@@ -56,27 +62,30 @@ public class ConnectivityValidateAction : StreamDeckAction<ConnectivitySettings>
             {
                 case ConnectivityState.Layer4:
                     await SetImageAsync(EncodedImages.ImageLayer4);
+                    await SetTitleAsync("Internet");
                     break;
                 case ConnectivityState.Layer3:
                     await SetImageAsync(EncodedImages.ImageLayer3);
+                    await SetTitleAsync("No DNS");
                     break;
                 case ConnectivityState.DefaultGateway:
                     await SetImageAsync(EncodedImages.ImageNoConnectivity);
+                    await SetTitleAsync("Gateway Only");
                     break;
                 case ConnectivityState.NoConnectivity:
                     await SetImageAsync(EncodedImages.ImageNoConnectivity);
+                    await SetTitleAsync("No Connectivity");
                     break;
                 default:
                     Console.Write("Default state switch hit, this shouldn't happen!");
                     await SetImageAsync(EncodedImages.ImageChecking);
+                    await SetTitleAsync("Failure!");
                     break;
             }
-
-            await SetTitleAsync(currentState.ToString());
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
+            Log.Error(ex, "Failure occurred attempting to update our current connectivity state: {ErrorMessage}", ex.Message);
             await SetTitleAsync($"Failure: {ex.Message}");
         }
     }

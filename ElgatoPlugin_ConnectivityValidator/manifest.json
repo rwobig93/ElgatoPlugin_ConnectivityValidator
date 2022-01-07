@@ -1,7 +1,7 @@
 ﻿{
   "$schema": "https://raw.githubusercontent.com/GeekyEggo/SharpDeck/master/src/SharpDeck.PropertyInspector/manifest-schema.json",
   "Name": "Connectivity Validator",
-  "Version": "1.0.0",
+  "Version": "%APPLICATIONVERSION%",
   "Author": "Rick Wobig",
   "Actions": [
     {
@@ -20,7 +20,7 @@
   "CategoryIcon": "Images/wt_icon_category",
   "CodePath": "com.rwobig93.connectivity.validator.exe",
   "Description": "A Connectivity Validator",
-  "Icon": "Images/wt_icon_category",
+  "Icon": "Images/wt_icon_action",
   "SDKVersion": 2,
   "Software": {
     "MinimumVersion": "4.1"
