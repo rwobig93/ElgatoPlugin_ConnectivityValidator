@@ -8,19 +8,19 @@
       "Name": "Connectivity Validator",
       "UUID": "com.rwobig93.connectivity.validator",
       "Icon": "Images/checking",
-      "Tooltip": "A counter action",
+      "Tooltip": "Internet Connectivity Validator",
       "States": [
         {
-          "Image": "Images/Counter/Image"
+          "Image": "Images/wt_icon_key"
         }
       ]
     }
   ],
-  "Category": "Connectivity",
-  "CategoryIcon": "Images/layer4",
-  "CodePath": "Elgato_ConnectivityValidator.exe",
+  "Category": "Connectivity [Wobigtech]",
+  "CategoryIcon": "Images/wt_icon_category",
+  "CodePath": "com.rwobig93.connectivity.validator.exe",
   "Description": "A Connectivity Validator",
-  "Icon": "Images/layer4",
+  "Icon": "Images/wt_icon_category",
   "SDKVersion": 2,
   "Software": {
     "MinimumVersion": "4.1"

@@ -5,25 +5,53 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <AssemblyName>Elgato_ConnectivityValidator</AssemblyName>
+        <AssemblyName>com.rwobig93.connectivity.validator</AssemblyName>
+        <Company>Wobigtech</Company>
+        <Product>Elgato ConnectivityValidator</Product>
+        <ApplicationIcon>WT_Icon_New.ico</ApplicationIcon>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
       <OutputPath>$(APPDATA)\Elgato\StreamDeck\Plugins\com.rwobig93.connectivityvalidator.sdPlugin\</OutputPath>
+      <Optimize>true</Optimize>
     </PropertyGroup>
 
-    <ItemGroup>
-      <None Update="manifest.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <OutputPath>C:\Users\Rick\AppData\Roaming\Elgato\StreamDeck\Plugins\com.rwobig93.connectivityvalidator.sdPlugin\</OutputPath>
+    </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="SharpDeck" Version="6.0.1" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="manifest.json" />
+      <Content Include="manifest.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Update="Images\wt_icon_action.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Images\wt_icon_action@2x.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Images\wt_icon_category.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Images\wt_icon_category@2x.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Images\wt_icon_key.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
     <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
       <Exec Command="taskkill -f -t -im StreamDeck.exe -fi &quot;status eq running&quot;" />
+    </Target>
+
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+      <Exec Command="start &quot;C:\Program Files\Elgato\StreamDeck\StreamDeck.exe&quot;" />
     </Target>
 
 </Project>

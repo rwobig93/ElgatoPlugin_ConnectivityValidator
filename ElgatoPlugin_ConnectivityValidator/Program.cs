@@ -4,4 +4,4 @@ System.Diagnostics.Debugger.Launch();
 #endif
     
 // register actions and connect to the Stream Deck
-StreamDeckPlugin.Run();
+await StreamDeckPlugin.RunAsync();
