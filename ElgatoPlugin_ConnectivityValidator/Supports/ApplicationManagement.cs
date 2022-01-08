@@ -42,12 +42,4 @@ internal static class ApplicationManagement
                        "%appdata$\\Elgato\\StreamDeck\\Plugins\\com.rwobig93.connectivityvalidator.sdPlugin")
                    .FullName;
     }
-
-    internal static void InitializeConfigSettings()
-    {
-        var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json", true, true);
-        var config = builder.Build();
-        LocalConfiguration.LocalConfig = config;
-        Log.Information("Initialized Configuration Settings");
-    }
 }

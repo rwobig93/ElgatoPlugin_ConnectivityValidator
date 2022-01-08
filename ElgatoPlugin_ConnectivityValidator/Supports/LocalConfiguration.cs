@@ -1,32 +1,66 @@
-﻿using System.Collections;
-using ElgatoPlugin_ConnectivityValidator.Actions;
-using Microsoft.Extensions.Configuration;
+﻿using ElgatoPlugin_ConnectivityValidator.Actions;
 using Serilog;
 using Serilog.Events;
+using Newtonsoft.Json;
 
 namespace ElgatoPlugin_ConnectivityValidator.Supports;
 
-internal static class LocalConfiguration
+internal class LocalConfiguration
 {
-    internal static IConfigurationRoot LocalConfig { get; set; } = new ConfigurationManager();
+    private string[]? WebsitesToCheck { get; }
+    private string[]? AddressesToCheck { get; }
+    private string? LogLevel { get; }
+    
+    public LocalConfiguration(string[]? websitesToCheck = null, string[]? addressesToCheck = null, string? logLevel = null)
+    {
+        WebsitesToCheck = websitesToCheck;
+        AddressesToCheck = addressesToCheck;
+        LogLevel = logLevel;
+    }
+
+    private static LocalConfiguration RunningConfiguration { get; set; } = new(
+        ApplicationDefaults.Layer4ValidationUrls, 
+        ApplicationDefaults.Layer3ValidationAddresses, 
+        ApplicationDefaults.LoggingLevel);
 
     internal static async Task UpdateRunningSettingsFromLocalSettings(ConnectivitySettings runningSettings)
     {
         Log.Debug("Attempting to update running settings from local settings");
-        // TODO: Need to read from appsettings.json as it isn't being updated in real-time, otherwise it'll only
-        //       load on startup
-        UpdateLoggerLogLevel(runningSettings);
+        await LoadConfigurationFile();
+        UpdateLoggerLogLevel();
         await UpdateLayer4Websites(runningSettings);
         await UpdateLayer3Addresses(runningSettings);
 
         Log.Debug("Updated running settings from local settings");
     }
 
-    private static void UpdateLoggerLogLevel(ConnectivitySettings runningSettings)
+    private static async Task LoadConfigurationFile()
     {
         try
         {
-            var localLogLevel = LocalConfig["LogLevel"] ?? "Information";
+            Log.Verbose("Attempting to load the local configuration file: {ConfigFilePath}", 
+                ApplicationDefaults.PathConfigurationFile);
+            
+            using var reader = new StreamReader(ApplicationDefaults.PathConfigurationFile);
+            var fileContent = await reader.ReadToEndAsync();
+            RunningConfiguration = JsonConvert.DeserializeObject<LocalConfiguration>(fileContent) ?? 
+                                   new LocalConfiguration();
+            
+            Log.Debug("Loaded local configuration file: {ConfigFilePath}", 
+                ApplicationDefaults.PathConfigurationFile);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failure occurred attempting to read the configuration file: {ErrorMessage}", 
+                ex.Message);
+        }
+    }
+
+    private static void UpdateLoggerLogLevel()
+    {
+        try
+        {
+            var localLogLevel = RunningConfiguration.LogLevel ?? "Information";
             var levelLower = localLogLevel.ToLower();
             LogEventLevel localConfigLogLevel;
             switch (levelLower)
@@ -75,10 +109,13 @@ internal static class LocalConfiguration
         try
         {
             var addressValidationFailed = false;
-            var addressesToCheck = LocalConfig["AddressesToCheck"]?.Replace(" ", "")
-                .Split(",") ?? ApplicationDefaults.Layer3ValidationAddresses;
+            if (RunningConfiguration.AddressesToCheck is null)
+            {
+                Log.Debug("AddressesToCheck is null from running configuration, using defaults: " +
+                          "{DefaultAddresses}", string.Join(", ", ApplicationDefaults.Layer3ValidationAddresses));
+            }
 
-            foreach (var address in addressesToCheck)
+            foreach (var address in RunningConfiguration.AddressesToCheck!)
             {
                 if (await NetworkUtilities.DoesAddressReturnSuccessCode(address)) continue;
 
@@ -87,14 +124,14 @@ internal static class LocalConfiguration
                     "Address entered doesn't return a success status code, using defaults. " +
                         "| Entered: {FailedAddress}",
                     address);
-                Log.Warning("  Default we're using for now: {DefaultAddress}",
+                Log.Warning("  Default we're using for now: {DefaultAddresses}",
                     string.Join(", ", ApplicationDefaults.Layer3ValidationAddresses));
             }
 
-            if (runningSettings.Layer3ValidationAddresses != addressesToCheck && !addressValidationFailed)
+            if (runningSettings.Layer3ValidationAddresses != RunningConfiguration.AddressesToCheck && !addressValidationFailed)
             {
                 Log.Debug("Attempting to update modified AddressesToCheck");
-                runningSettings.Layer3ValidationAddresses = addressesToCheck;
+                runningSettings.Layer3ValidationAddresses = RunningConfiguration.AddressesToCheck;
                 Log.Information("AddressesToCheck changed, updating: {Layer3ValidationAddresses}", 
                     runningSettings.Layer3ValidationAddresses);
             }
@@ -111,10 +148,13 @@ internal static class LocalConfiguration
         try
         {
             var websiteValidationFailed = false;
-            var websitesToCheck = LocalConfig["WebsitesToCheck"]?.Replace(" ", "")
-                                      .Split(",") ?? ApplicationDefaults.Layer4ValidationUrls;
+            if (RunningConfiguration.WebsitesToCheck is null)
+            {
+                Log.Debug("WebsitesToCheck is null from running configuration, using defaults: " +
+                          "{DefaultWebpages}", string.Join(", ", ApplicationDefaults.Layer4ValidationUrls));
+            }
         
-            foreach (var website in websitesToCheck)
+            foreach (var website in RunningConfiguration.WebsitesToCheck!)
             {
                 if (await NetworkUtilities.DoesWebpageReturnSuccessStatusCode(website)) continue;
             
@@ -126,10 +166,10 @@ internal static class LocalConfiguration
                     string.Join(", ", ApplicationDefaults.Layer4ValidationUrls));
             }
 
-            if (runningSettings.Layer4ValidationUrls != websitesToCheck && !websiteValidationFailed)
+            if (runningSettings.Layer4ValidationUrls != RunningConfiguration.WebsitesToCheck && !websiteValidationFailed)
             {
                 Log.Debug("Attempting to update modified WebsitesToCheck");
-                runningSettings.Layer4ValidationUrls = websitesToCheck;
+                runningSettings.Layer4ValidationUrls = RunningConfiguration.WebsitesToCheck;
                 Log.Information("WebsitesToChange changed, updating: {Layer4ValidationUrls}",
                     runningSettings.Layer4ValidationUrls);
             }
